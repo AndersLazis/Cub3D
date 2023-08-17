@@ -30,6 +30,26 @@ typedef struct s_raycast
     double  deltaDistX;
     double  deltaDistY;
     int     hit;
+    double ray_dir_x;
+    double ray_dir_y;
+    int     step_x;
+    int     step_y;
+    double  side_dist_x;
+    double  side_dist_y;
+    int     map_x;
+    int     map_y;
+    int     side;
+    double  perp_wall_dist;
+    int     line_height;
+    int     draw_start;
+    int     draw_end;
+    int     texnum;
+    double  wallx;
+    int     texx;
+    double  step;
+    double  texpos;
+    id_t    texy;
+    uint32_t colr;
 
 
 
@@ -48,6 +68,8 @@ typedef struct s_data
     char    player_direction;
     char    **temp_map;
     int     **imap;
+    int     tex_width;
+    int     tex_height;
 
 
 
@@ -119,10 +141,53 @@ void	draw_floor_n_sky(t_data *data)
 	}
 }
 
+void	calc_draw(t_data *data)
+{
+
+	data->raycasting->line_height = (int)(data->screen_heigth / data->raycasting->perp_wall_dist);
+	data->raycasting->draw_start = -data->raycasting->line_height / 2 + data->screen_heigth / 2;
+	if (data->raycasting->draw_start < 0)
+		data->raycasting->draw_start = 0;
+	data->raycasting->draw_end = data->raycasting->line_height / 2 + data->screen_heigth / 2;
+	if (data->raycasting->draw_end >= data->screen_heigth)
+		data->raycasting->draw_end = data->screen_heigth - 1;
+	data->raycasting->texnum = data->imap[data->raycasting->map_y][data->raycasting->map_x];
+	if (data->raycasting->side % 2 == 0)
+		data->raycasting->wallx = data->raycasting->pos_y + data->raycasting->perp_wall_dist * data->raycasting->ray_dir_y;
+	else
+		data->raycasting->wallx = data->raycasting->pos_x + data->raycasting->perp_wall_dist * data->raycasting->ray_dir_x;
+	data->raycasting->wallx -= floor((data->raycasting->wallx));
+	data->raycasting->texx = (int)(data->raycasting->wallx * (double)data->tex_width);
+}
 
 
 
-   
+
+
+
+
+void	draw_walls(t_data *data, int i)
+{
+	int			j;
+
+	if (data->raycasting->side % 2 == 0 && data->raycasting->ray_dir_x > 0)
+		data->raycasting->texx = data->tex_width - data->raycasting->texx - 1;
+	if (data->raycasting->side % 2 == 1 && data->raycasting->ray_dir_y < 0)
+		data->raycasting->texx = data->tex_width - data->raycasting->texx - 1;
+	data->raycasting->step = 1.0 * data->tex_height / data->raycasting->line_height;
+	data->raycasting->texpos = (data->raycasting->draw_start - data->screen_heigth / 2 + data->raycasting->line_height / 2) * data->raycasting->step;
+	j = data->raycasting->draw_start;
+	while (j < data->raycasting->draw_end)
+	{
+		data->raycasting->texy = (int)data->raycasting->texpos & (data->tex_height - 1);
+		data->raycasting->texpos += data->raycasting->step;
+		data->raycasting->colr = 100;
+		if (data->raycasting->side % 2 == 1)
+			data->raycasting->colr = data->raycasting->colr / 2;
+		my_mlx_pixel_put(data, i, j, data->raycasting->colr);
+		j++;
+	}
+}
 
 
 
@@ -132,34 +197,78 @@ void	draw_floor_n_sky(t_data *data)
 
 
 
-void    draw_walls(t_data *data)
+void    render_walls(t_data *data)
 {
     int i = 0;
 
     while(i < data->screen_width)
-    {
+    {   
+        /*init*/
         double cameraX = 2 * i / (double)(data->screen_width) - 1; //x-coordinate in camera space
-        double rayDirX = data->raycasting->dir_x + data->raycasting->plane_x * cameraX;
-        double rayDirY = data->raycasting->dir_y + data->raycasting->plane_y * cameraX;
-        int mapX = (int)data->raycasting->pos_x;
-        int mapY = (int)data->raycasting->pos_y;
-        data->raycasting->deltaDistX = fabs(1 / rayDirX);
-        data->raycasting->deltaDistY = fabs(1 / rayDirY);
+        double ray_dir_x = data->raycasting->dir_x + data->raycasting->plane_x * cameraX;
+        double ray_dir_y = data->raycasting->dir_y + data->raycasting->plane_y * cameraX;
+        data->raycasting->map_x = (int)data->raycasting->pos_x;
+        data->raycasting->map_y = (int)data->raycasting->pos_y;
+        data->raycasting->deltaDistX = fabs(1 / ray_dir_x);
+        data->raycasting->deltaDistY = fabs(1 / ray_dir_y);
         data->raycasting->hit = 0;
+        /* side_dist x */
+        if(data->raycasting->ray_dir_x < 0)
+        {
+            data->raycasting->step_x = -1;
+            data->raycasting->side_dist_x = (data->raycasting->pos_x - data->raycasting->map_x) * data->raycasting->deltaDistX;
+        }
+        else
+        {
+            data->raycasting->step_x = 1;
+            data->raycasting->side_dist_x = (data->raycasting->map_x + 1.0 - data->raycasting->pos_x) * data->raycasting->deltaDistX;
+        }
+        /* side_dist y */
+        if(data->raycasting->ray_dir_y < 0)
+        {
+            data->raycasting->step_y = -1;
+            data->raycasting->side_dist_y = (data->raycasting->pos_y - data->raycasting->map_y) * data->raycasting->deltaDistY;
+        }
+        else
+        {
+            data->raycasting->step_y = 1;
+            data->raycasting->side_dist_y = (data->raycasting->map_y + 1.0 - data->raycasting->pos_y) * data->raycasting->deltaDistY;
+        }
+        /* caclulation of hit */
+        while (data->raycasting->hit == 0)
+        {   /* check where to go  and side  0 - RH , 2 - LH, 1 - UP, 3 - DWN */
+            if(data->raycasting->side_dist_x < data->raycasting->side_dist_y)
+            {
+                data->raycasting->side_dist_x += data->raycasting->deltaDistX;
+                data->raycasting->map_x += data->raycasting->step_x;
+                data->raycasting->side = 0;
 
-        if()
-
-
-
-
-
-
-
-
-
-        i++;
+            }
+            else
+            {
+                data->raycasting->side_dist_y += data->raycasting->deltaDistY;
+                data->raycasting->map_y += data->raycasting->step_y;
+                data->raycasting->side = 1;
+            }
+            if(data->imap[data->raycasting->map_y][data->raycasting->map_x] > 0)
+                data->raycasting->hit = 1;
+        }
+        /* check side */
+        if(data->raycasting->side == 0)
+        {
+            if(data->raycasting->map_x > data->raycasting->pos_x)
+                data->raycasting->side = 2;
+            data->raycasting->perp_wall_dist = (data->raycasting->side_dist_x - data->raycasting->deltaDistX);
+        }
+        else
+        {
+            if(data->raycasting->map_y > data->raycasting->pos_y)
+                data->raycasting->side = 3;
+            data->raycasting->perp_wall_dist = (data->raycasting->side_dist_y - data->raycasting->deltaDistY);
+        }
+        calc_draw(data);
+        draw_walls(data, i);
     }
-
 }
 
 
@@ -175,7 +284,7 @@ int loop_function(t_data *data)
     raycasting->img = mlx_new_image(data->mlx, data->screen_width, data->screen_heigth);
     raycasting->img_address = mlx_get_data_addr(raycasting->img, &raycasting->bits_per_pixel, &raycasting->line_length, &raycasting->endian);
     draw_floor_n_sky(data);
-    draw_walls(data);
+    render_walls(data);
     mlx_put_image_to_window(data->mlx, data->win, data->raycasting->img, 0, 0);
     mlx_destroy_image(data->mlx, raycasting->img);
     /*if (data->minimap_on)
@@ -248,16 +357,18 @@ int convert_map(t_data *data)
 		i++;
 	}
     ///////////////////////
+    return (0);
 }
 
 
 void	init_facing_direction(t_data *data)
-{
+{   printf("============1===========\n");
     /* Here should be full algorithm */
     data->raycasting->dir_x = 0;
     data->raycasting->dir_y = -1;
     data->raycasting->plane_y = 0;
 	data->raycasting->plane_x = -0.66;
+    
 }
 
 
