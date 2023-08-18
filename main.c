@@ -1,112 +1,52 @@
-#include "mlx.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-# include <limits.h>
-# include <fcntl.h>
-# include <math.h>
-# include <time.h>
-#include <unistd.h>
-#include "gnl/get_next_line.h"
 
+#include "cub3d.h"
 
-/*  Header file */
-typedef struct s_raycast
-{   
-    void	*mlx;
-    void    *win;
-    void    *img;
-    char    *img_address;
-    int     bits_per_pixel;
-    int     line_length;
-    int     endian;
-    double  plane_x;
-    double  plane_y;
-    double  dir_y;
-    double  dir_x;
-    double  camera_x;
-    double  pos_x;
-    double  pos_y;
-    double  deltaDistX;
-    double  deltaDistY;
-    int     hit;
-    double ray_dir_x;
-    double ray_dir_y;
-    int     step_x;
-    int     step_y;
-    double  side_dist_x;
-    double  side_dist_y;
-    int     map_x;
-    int     map_y;
-    int     side;
-    double  perp_wall_dist;
-    int     line_height;
-    int     draw_start;
-    int     draw_end;
-    int     texnum;
-    double  wallx;
-    int     texx;
-    double  step;
-    double  texpos;
-    id_t    texy;
-    uint32_t colr;
-
-
-
-}   t_raycast;
-
-typedef struct s_data
+int ft_error(int error_code)
 {
-    void    *mlx;
-    void    *win;
-    int     screen_heigth;
-    int     screen_width;
-
-    int     sky_color;
-    int     floor_color;
-    char    *win_title;
-    char    player_direction;
-    char    **temp_map;
-    int     **imap;
-    int     tex_width;
-    int     tex_height;
+    /*free_data_function*/
+    if(error_code == MEMORY_ERROR)
+        printf("Error. Program can't allocate memory.");
+    else if (error_code == INVALID_MAP)
+		 printf("Error. Map is invalid.");
+	else if (error_code == WRONG_MAP_PATH)
+		 printf("Error. Can't find map.");
+	else if (error_code == WRONG_QTY_ARGS)
+		 printf("Error. Wrong qty of args.");
+    exit(1);
+}
 
 
+#define WRONG_QTY_ARGS  4
 
-    t_raycast *raycasting;
-
-
-}   t_data;
-
-
-
-/*=======================================================================*/
-
-
-int init_data(t_data	*data)
+t_data *init_data()
 {
+    t_data *data;
+    data = malloc(sizeof(t_data));
+	if(data == NULL)
+		ft_error(MEMORY_ERROR);
 	data->raycasting = calloc(sizeof(t_raycast), 1);
 	if (data->raycasting == NULL)
-		return (-1);
+		ft_error(MEMORY_ERROR);
 	data->mlx = mlx_init();
 	data->raycasting->mlx = data->mlx;
-	data->screen_width = 800;
-	data->screen_heigth = 600;
+	data->screen_width = 1024;
+	data->screen_heigth = 768;
     data->sky_color = 127;
     data->floor_color = 65;
-    data->win_title = strdup("cub3d");
-
+	/*
+	data->tex_width = 64;
+	data->tex_height = 64;
+	//initialize textures
+	*/
 
     // POS X & POS Y
-    data->raycasting->pos_x = 3;
-    data->raycasting->pos_y = 2;
+    data->raycasting->pos_x = 1;
+    data->raycasting->pos_y = 4;
 
-    
-
-	data->win = mlx_new_window(data->mlx, data->screen_width, data->screen_heigth, "Game");
+    data->win = mlx_new_window(data->mlx, data->screen_width, data->screen_heigth, "cub_3d");
 	data->raycasting->win = data->win;
 
-	return (0);
+	return (data);
 }
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
@@ -181,9 +121,10 @@ void	draw_walls(t_data *data, int i)
 	{
 		data->raycasting->texy = (int)data->raycasting->texpos & (data->tex_height - 1);
 		data->raycasting->texpos += data->raycasting->step;
-		data->raycasting->colr = 100;
+		data->raycasting->colr = 0x0000ff40;
 		if (data->raycasting->side % 2 == 1)
 			data->raycasting->colr = data->raycasting->colr / 2;
+        printf("i=%d, j=%d, data->raycasting->colr = %d\n", i, j, data->raycasting->colr);
 		my_mlx_pixel_put(data, i, j, data->raycasting->colr);
 		j++;
 	}
@@ -268,6 +209,7 @@ void    render_walls(t_data *data)
         }
         calc_draw(data);
         draw_walls(data, i);
+        i++;
     }
 }
 
@@ -299,56 +241,76 @@ int init_map_data(t_data *data, char *map_adress)
 {
     
     int fd;
-    char    **res;
+    char    **map_in_char;
     char    *line;
     int     i;
-
+	/* reading_map */
     fd = open(map_adress, O_RDONLY);
-    int lines = 10;
-    res = malloc(sizeof(char *) * (lines + 1));
+	if(fd == -1)
+		ft_error(WRONG_MAP_PATH);
+	/* ++add map lines counter */
+    int lines = 8;
+    map_in_char = malloc(sizeof(char *) * (lines + 1));
+	if (map_in_char == NULL)
+		ft_error(MEMORY_ERROR);
+
     line = get_next_line(fd);
-    res[0] = line;
-   i = 1;
+    map_in_char[0] = line;
+   	i = 1;
     while(line)    
     {        
         line = get_next_line(fd);
-        res[i] = line;
+        map_in_char[i] = line;
         i++;
     }
-	res[i] = NULL;
-	i =0;
-    data->temp_map= res;
- 
+	map_in_char[i] = NULL;
+    data->temp_map= map_in_char; 
 	close(fd);
     return(0);
 }
 
+
+void    fill_map(t_data *data, int i)
+{
+    int j = 0;
+    while ((data->temp_map[i][j] != '\0' && data->temp_map[i][j] != '\n'))
+    {
+        data->imap[i][j] = data->temp_map[i][j] - '0';
+        //printf("%d", data->imap[i][j]);
+        j++;
+    }
+}
+
+/* convert map from char to int*/
 int convert_map(t_data *data)
 {
    int	i, j;
 
 	i = 0;
+	/////////TEMPORARY FUNCTION ////////
+	/* + add function that will calculate max legth of non-rectangular map */
+	/* + add function that will conver non-rectangular map to a rectangular map */
 	while (data->temp_map[i])
 		i++;
+	////////////////////////////////////
     data->imap = malloc(sizeof(int *) * i);
     i = 0;
     j = 0;
-    while(data->temp_map)
-    {    
+    while(data->temp_map[i] != NULL)
+    {   
         data->imap[i] = malloc(sizeof(int) * strlen(data->temp_map[i]));
-        i = 0;
-        j = 0;
-        while ((data->temp_map[i][j] != '\0' && data->temp_map[i][j] != '\n'))
-        {
-        data->imap[i][j] = data->temp_map[i][j] - 0;
-        j++;
-        }
+        fill_map(data, i);
+
         i++;
     }
     //////test map printing:
-	while(data->imap[i])
+
+    i = 0;
+    j = 0;
+	while(data->temp_map[i] != NULL)
 	{
-		while((data->imap[i][j] != '\0' && data->imap[i][j] != '\n'))
+        j = 0;
+		while(j < 6)
         {
             printf("%d", data->imap[i][j]);
             j++;
@@ -362,27 +324,27 @@ int convert_map(t_data *data)
 
 
 void	init_facing_direction(t_data *data)
-{   printf("============1===========\n");
-    /* Here should be full algorithm */
-    data->raycasting->dir_x = 0;
-    data->raycasting->dir_y = -1;
+{  
+    /* Here should be the full algorithm */
+    data->raycasting->dir_x = 1;
+    data->raycasting->dir_y = 0;
     data->raycasting->plane_y = 0;
 	data->raycasting->plane_x = -0.66;
-    
 }
 
 
 int main(int ac, char **argv)
 {
-
     t_data	*data;
-    (void)ac;
 
-    data = malloc(sizeof(t_data));
-    init_data(data);
+    (void)ac;  
+    data = init_data();
+	/* + add check args */
+	/* + add check map */
     init_map_data(data, argv[1]);
     convert_map(data);
     /*init_map*/   
+    
     init_facing_direction(data);   
     /*mlx_hooks*/
     mlx_loop_hook(data->mlx, loop_function, data);

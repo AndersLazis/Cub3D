@@ -13,6 +13,8 @@ LINKS = -I libft -L libft \
 $(NAME): $(OBJECTS)
 	gcc $(SOURCES) -o $(NAME) $(FLAGS) $(LINKS)
 
+all: $(NAME)
+
 clean:
 	@rm -rf main main.o
 
