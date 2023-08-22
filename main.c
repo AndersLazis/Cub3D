@@ -32,20 +32,22 @@ t_data *init_data()
 		ft_error(MEMORY_ERROR);
 	data->mlx = mlx_init();
 	data->raycasting->mlx = data->mlx;
-	data->screen_width = 1024;
-	data->screen_heigth = 768;
+	data->screen_width = 1200;
+	data->screen_heigth = 900;
     data->sky_color = 127;
     data->floor_color = 65;	
 	data->tex_width = 64;
 	data->tex_height = 64;
-    // temp POS X & POS Y
+    // ----temp POS X & POS Y------
     data->raycasting->pos_x = 5;
     data->raycasting->pos_y = 5;
+	//-----------------------------
 
     data->win = mlx_new_window(data->mlx, data->screen_width, data->screen_heigth, "cub_3d");
 	data->raycasting->win = data->win;
-	data->texture = (uint32_t **) calloc(sizeof(uint32_t *), 4);
-
+	data->texture = (uint32_t **) calloc(sizeof(uint32_t *), 4);//<-replace calloc funct.
+	if(data->texture == NULL)
+		ft_error(MEMORY_ERROR);
 	return (data);
 }
 
@@ -84,16 +86,16 @@ int init_map_data(t_data *data, char *map_adress)
     char    **map_in_char;
     char    *line;
     int     i;
-	/* reading_map */
+
     fd = open(map_adress, O_RDONLY);
 	if(fd == -1)
 		ft_error(WRONG_MAP_PATH);
-	/* ++add map lines counter */
+	/*----- ++add map lines counter ---*/
     int lines = 8;
+	//-----------------------------------
     map_in_char = malloc(sizeof(char *) * (lines + 1));
 	if (map_in_char == NULL)
 		ft_error(MEMORY_ERROR);
-
     line = get_next_line(fd);
     map_in_char[0] = line;
    	i = 1;
@@ -105,12 +107,14 @@ int init_map_data(t_data *data, char *map_adress)
     }
 	map_in_char[i] = NULL;
     data->temp_map= map_in_char; 
-	i = 0;
-	while (i < 8)
-	{
-		printf("line =%s", map_in_char[i]);
-		i++;
-	}	
+	//-------test print -----------------
+	// i = 0;
+	// while (i < 8)
+	// {
+	// 	printf("line =%s", map_in_char[i]);
+	// 	i++;
+	// }
+	//-----------------------------------	
 	close(fd);
     return(0);
 }
@@ -187,28 +191,6 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	dst = data->raycasting->img_address + (y * data->raycasting->line_length + x * (data->raycasting->bits_per_pixel / 8));
 	*(unsigned int*)dst = color;
 }
-
-// void	draw_floor_n_sky(t_data *data)
-// {
-// 	int		y;
-// 	int		x;
-
-// 	y = -1;  
-// 	while (++y < data->screen_heigth/2)
-// 	{
-// 		x = -1;
-// 		while (++x < data->screen_width)
-//             my_mlx_pixel_put(data, x++, y, 0x0000ffff);
-// 			//mlx_pixel_put(data->mlx, data->win, x++, y, data->sky_color);
-// 	}
-// 	while (++y < data->screen_heigth)
-// 	{
-// 		x = -1;
-// 		while (++x < data->screen_width)
-//             my_mlx_pixel_put(data, x++, y, 0x0000ff40);
-// 			//mlx_pixel_put(data->mlx, data->win, x++, y, data->floor_color);
-// 	}
-// }
 
 
 void	draw_floor_n_sky(t_data *data)
@@ -360,47 +342,47 @@ void    render_walls(t_data *data)
 
 
 ////////////////	MOVEMENTS	///////////////////
-static void	move_forward(t_data *game)
+static void	move_forward(t_data *data)
 {
 	t_raycast	*rays;
 
-	rays = game->raycasting;
-	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x + rays->dir_x * rays->move_speed)] == 0)
+	rays = data->raycasting;
+	if (data->imap[(int)rays->pos_y][(int)(rays->pos_x + rays->dir_x * rays->move_speed)] == 0)
 		rays->pos_x += rays->dir_x * rays->move_speed;
-	if (game->imap[(int)(rays->pos_y + rays->dir_y * rays->move_speed)][(int)rays->pos_x] == 0)
+	if (data->imap[(int)(rays->pos_y + rays->dir_y * rays->move_speed)][(int)rays->pos_x] == 0)
 		rays->pos_y += rays->dir_y * rays->move_speed;
 }
 
-static void	move_backward(t_data *game)
+static void	move_backward(t_data *data)
 {
 	t_raycast	*rays;
 
-	rays = game->raycasting;
-	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x - rays->dir_x * rays->move_speed)] == 0)
+	rays = data->raycasting;
+	if (data->imap[(int)rays->pos_y][(int)(rays->pos_x - rays->dir_x * rays->move_speed)] == 0)
 		rays->pos_x -= rays->dir_x * rays->move_speed;
-	if (game->imap[(int)(rays->pos_y - rays->dir_y * rays->move_speed)][(int)rays->pos_x] == 0)
+	if (data->imap[(int)(rays->pos_y - rays->dir_y * rays->move_speed)][(int)rays->pos_x] == 0)
 		rays->pos_y -= rays->dir_y * rays->move_speed;
 }
 
-static void	move_left(t_data *game)
+static void	move_left(t_data *data)
 {
 	t_raycast	*rays;
 
-	rays = game->raycasting;
-	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x - rays->dir_y * rays->move_speed)] == 0)
+	rays = data->raycasting;
+	if (data->imap[(int)rays->pos_y][(int)(rays->pos_x - rays->dir_y * rays->move_speed)] == 0)
 	rays->pos_x -= rays->dir_y * rays->move_speed;
-	if (game->imap[(int)(rays->pos_y + rays->dir_x * rays->move_speed)][(int)rays->pos_x] == 0)
+	if (data->imap[(int)(rays->pos_y + rays->dir_x * rays->move_speed)][(int)rays->pos_x] == 0)
 	rays->pos_y += rays->dir_x * rays->move_speed;
 }
 
-static void	move_right(t_data *game)
+static void	move_right(t_data *data)
 {
 	t_raycast	*rays;
 
-	rays = game->raycasting;
-	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x + rays->dir_y * rays->move_speed)] == 0)
+	rays = data->raycasting;
+	if (data->imap[(int)rays->pos_y][(int)(rays->pos_x + rays->dir_y * rays->move_speed)] == 0)
 	rays->pos_x += rays->dir_y * rays->move_speed;
-	if (game->imap[(int)(rays->pos_y - rays->dir_x * rays->move_speed)][(int)rays->pos_x] == 0)
+	if (data->imap[(int)(rays->pos_y - rays->dir_x * rays->move_speed)][(int)rays->pos_x] == 0)
 	rays->pos_y -= rays->dir_x * rays->move_speed;
 }
 
@@ -411,10 +393,10 @@ static void	move_right(t_data *game)
 
 ////////////////	EXIT GAME	///////////////////
 
-int	exit_game(t_data *game)
+int	exit_game(t_data *data)
 {
-    (void)game;
-	//+add free_game(game);
+    (void)data;
+	//+add free_game(data);
 	exit (0);
 }
 
@@ -435,11 +417,11 @@ unsigned int ft_get_time(void)
 
 
 ////////////////	KEY HOOKS	///////////////////
-void	key_left(t_data *game)
+void	key_left(t_data *data)
 {
 	t_raycast	*rays;
 
-	rays = game->raycasting;
+	rays = data->raycasting;
 	rays->old_dir_x = rays->dir_x;
 	rays->dir_x = rays->dir_x * cos(rays->rot_speed) - rays->dir_y * sin(rays->rot_speed);
 	rays->dir_y = rays->old_dir_x * sin(rays->rot_speed) + rays->dir_y * cos(rays->rot_speed);
@@ -448,11 +430,11 @@ void	key_left(t_data *game)
 	rays->plane_y = rays->old_plane_x * sin(rays->rot_speed) + rays->plane_y * cos(rays->rot_speed);
 }
 
-void	key_right(t_data *game)
+void	key_right(t_data *data)
 {
 	t_raycast	*rays;
 
-	rays = game->raycasting;
+	rays = data->raycasting;
 	rays->old_dir_x = rays->dir_x;
 	rays->dir_x = rays->dir_x * cos(-rays->rot_speed) - rays->dir_y * sin(-rays->rot_speed);
 	rays->dir_y = rays->old_dir_x * sin(-rays->rot_speed) + rays->dir_y * cos(-rays->rot_speed);
@@ -515,6 +497,27 @@ int loop_function(t_data *data)
 
 
 
+
+
+
+////////////////	INIT TEXTURES	///////////////////
+int	init_textures(t_data *data)
+{
+
+
+
+	
+}
+
+
+
+
+
+
+
+
+
+
 ////////////////	MAIN	///////////////////
 int main(int ac, char **argv)
 {
@@ -525,15 +528,17 @@ int main(int ac, char **argv)
 	/* + add check args */
 	/* + add check map */
     init_map_data(data, argv[1]);
-    /*init_map*/       
 
-	//temp declaration:
+	//--------temp declaration:---------
 	data->player_direction = 'N';
+	//----------------------------------
 
     init_facing_direction(data);  
-	printf("segfault is here - 2\n");
+	//printf("segfault is here - 2\n");
     convert_map(data);
-	printf("segfault is here - 3\n");
+	//printf("segfault is here - 3\n");
+	init_textures(data);
+
 	mlx_hook(data->win, 17, 1L << 0, exit_game, data);
     mlx_key_hook(data->win, keys, data);
     mlx_loop_hook(data->mlx, loop_function, data);
