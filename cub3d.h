@@ -49,6 +49,14 @@ typedef struct s_raycast
     double  texpos;
     id_t    texy;
     int     colr;
+    double  time;
+    double  oldtime;
+    double  frametime;
+    double  move_speed;
+    double  rot_speed;
+    double  old_dir_x;
+    double  old_plane_x;
+
 
 
 
@@ -69,6 +77,7 @@ typedef struct s_data
     int     **imap;
     int     tex_width;
     int     tex_height;
+    uint32_t    **texture;
 
 
 

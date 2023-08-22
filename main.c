@@ -1,6 +1,7 @@
 
 #include "cub3d.h"
 
+////////////////	ERROR HANDLING	///////////////////
 int ft_error(int error_code)
 {
     /*free_data_function*/
@@ -16,8 +17,10 @@ int ft_error(int error_code)
 }
 
 
-#define WRONG_QTY_ARGS  4
 
+
+
+////////////////	INIT DATA	///////////////////
 t_data *init_data()
 {
     t_data *data;
@@ -32,23 +35,151 @@ t_data *init_data()
 	data->screen_width = 1024;
 	data->screen_heigth = 768;
     data->sky_color = 127;
-    data->floor_color = 65;
-	/*
+    data->floor_color = 65;	
 	data->tex_width = 64;
 	data->tex_height = 64;
-	//initialize textures
-	*/
-
-    // POS X & POS Y
-    data->raycasting->pos_x = 1;
-    data->raycasting->pos_y = 4;
+    // temp POS X & POS Y
+    data->raycasting->pos_x = 5;
+    data->raycasting->pos_y = 5;
 
     data->win = mlx_new_window(data->mlx, data->screen_width, data->screen_heigth, "cub_3d");
 	data->raycasting->win = data->win;
+	data->texture = (uint32_t **) calloc(sizeof(uint32_t *), 4);
 
 	return (data);
 }
 
+void	init_facing_direction(t_data *data)
+{  
+	if (data->player_direction == 'E')
+	{
+		data->raycasting->dir_x = -1;
+		data->raycasting->plane_y = 0.66;
+	}
+	if (data->player_direction == 'N')
+	{
+		data->raycasting->dir_y = -1;
+		data->raycasting->plane_x = -0.66;
+	}
+	if (data->player_direction == 'W')
+	{
+		data->raycasting->dir_x = 1;
+		data->raycasting->plane_y = -0.66;
+	}
+	if (data->player_direction == 'S')
+	{
+		data->raycasting->dir_y = 1;
+		data->raycasting->plane_x = 0.66;
+	}
+}
+
+
+
+
+////////////////	INIT MAP	///////////////////
+int init_map_data(t_data *data, char *map_adress)
+{
+    
+    int fd;
+    char    **map_in_char;
+    char    *line;
+    int     i;
+	/* reading_map */
+    fd = open(map_adress, O_RDONLY);
+	if(fd == -1)
+		ft_error(WRONG_MAP_PATH);
+	/* ++add map lines counter */
+    int lines = 8;
+    map_in_char = malloc(sizeof(char *) * (lines + 1));
+	if (map_in_char == NULL)
+		ft_error(MEMORY_ERROR);
+
+    line = get_next_line(fd);
+    map_in_char[0] = line;
+   	i = 1;
+    while(line)
+    {        
+        line = get_next_line(fd);
+        map_in_char[i] = line;
+        i++;
+    }
+	map_in_char[i] = NULL;
+    data->temp_map= map_in_char; 
+	i = 0;
+	while (i < 8)
+	{
+		printf("line =%s", map_in_char[i]);
+		i++;
+	}	
+	close(fd);
+    return(0);
+}
+
+void    fill_map(t_data *data, int i)
+{
+    int j = 0;
+    while ((data->temp_map[i][j] != '\0' && data->temp_map[i][j] != '\n'))
+    {
+        data->imap[i][j] = data->temp_map[i][j] - '0';
+        printf("%d", data->imap[i][j]);
+        j++;
+    }
+}
+
+/* convert map from char to int*/
+int convert_map(t_data *data)
+{
+   int	i, j;
+
+	i = 0;
+	/////////TEMPORARY FUNCTION ////////
+	/* + add function that will calculate max legth of non-rectangular map */
+	/* + add function that will conver non-rectangular map to a rectangular map */
+	while (data->temp_map[i])
+		i++;
+	printf("i = %d ", i);
+	////////////////////////////////////
+    data->imap = malloc(sizeof(int *) * i);
+    i = 0;
+    j = 0;
+    while(data->temp_map[i] != NULL)
+    {   
+        data->imap[i] = malloc(sizeof(int) * strlen(data->temp_map[i]));
+		printf("str %d len: %lu\n", i, strlen(data->temp_map[i]));
+        fill_map(data, i);
+
+        i++;
+    }
+    // //////test int map printing:
+    // i = 0;
+    // j = 0;
+	// while(data->imap[i] != NULL)
+	// {
+    //     j = 0;
+	// 	while(j <  (int)ft_strlen(data->temp_map[i]))
+    //     {
+    //         printf("%d", data->imap[i][j]);
+    //         j++;
+    //     }
+    //     printf("\n");
+	// 	i++;
+	// }
+    // ///////////////////////
+    return (0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////	RAYCASTING	///////////////////
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
 	char	*dst;
@@ -57,27 +188,47 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
+// void	draw_floor_n_sky(t_data *data)
+// {
+// 	int		y;
+// 	int		x;
+
+// 	y = -1;  
+// 	while (++y < data->screen_heigth/2)
+// 	{
+// 		x = -1;
+// 		while (++x < data->screen_width)
+//             my_mlx_pixel_put(data, x++, y, 0x0000ffff);
+// 			//mlx_pixel_put(data->mlx, data->win, x++, y, data->sky_color);
+// 	}
+// 	while (++y < data->screen_heigth)
+// 	{
+// 		x = -1;
+// 		while (++x < data->screen_width)
+//             my_mlx_pixel_put(data, x++, y, 0x0000ff40);
+// 			//mlx_pixel_put(data->mlx, data->win, x++, y, data->floor_color);
+// 	}
+// }
+
 
 void	draw_floor_n_sky(t_data *data)
 {
 	int		y;
 	int		x;
 
-	y = -1;
-  
+	y = -1;  
 	while (++y < data->screen_heigth/2)
 	{
 		x = -1;
 		while (++x < data->screen_width)
-            my_mlx_pixel_put(data, x++, y, 0x0000ffff);
-			//mlx_pixel_put(data->mlx, data->win, x++, y, data->sky_color);
+            my_mlx_pixel_put(data, x, y, 0x0000ffff);
+
 	}
 	while (++y < data->screen_heigth)
 	{
 		x = -1;
 		while (++x < data->screen_width)
-            my_mlx_pixel_put(data, x++, y, 0x0000ff40);
-			//mlx_pixel_put(data->mlx, data->win, x++, y, data->floor_color);
+            my_mlx_pixel_put(data, x, y, 0x808000);
 	}
 }
 
@@ -102,10 +253,6 @@ void	calc_draw(t_data *data)
 
 
 
-
-
-
-
 void	draw_walls(t_data *data, int i)
 {
 	int			j;
@@ -124,19 +271,11 @@ void	draw_walls(t_data *data, int i)
 		data->raycasting->colr = 0x0000ff40;
 		if (data->raycasting->side % 2 == 1)
 			data->raycasting->colr = data->raycasting->colr / 2;
-        printf("i=%d, j=%d, data->raycasting->colr = %d\n", i, j, data->raycasting->colr);
+        //printf("i=%d, j=%d, data->raycasting->colr = %d\n", i, j, data->raycasting->colr);
 		my_mlx_pixel_put(data, i, j, data->raycasting->colr);
 		j++;
 	}
 }
-
-
-
-
-
-
-
-
 
 void    render_walls(t_data *data)
 {
@@ -145,13 +284,13 @@ void    render_walls(t_data *data)
     while(i < data->screen_width)
     {   
         /*init*/
-        double cameraX = 2 * i / (double)(data->screen_width) - 1; //x-coordinate in camera space
-        double ray_dir_x = data->raycasting->dir_x + data->raycasting->plane_x * cameraX;
-        double ray_dir_y = data->raycasting->dir_y + data->raycasting->plane_y * cameraX;
+        data->raycasting->camera_x = 2 * i / (double)(data->screen_width) - 1; //x-coordinate in camera space
+        data->raycasting->ray_dir_x = data->raycasting->dir_x + data->raycasting->plane_x * data->raycasting->camera_x;
+        data->raycasting->ray_dir_y = data->raycasting->dir_y + data->raycasting->plane_y * data->raycasting->camera_x;
         data->raycasting->map_x = (int)data->raycasting->pos_x;
         data->raycasting->map_y = (int)data->raycasting->pos_y;
-        data->raycasting->deltaDistX = fabs(1 / ray_dir_x);
-        data->raycasting->deltaDistY = fabs(1 / ray_dir_y);
+        data->raycasting->deltaDistX = fabs(1 / data->raycasting->ray_dir_x);
+        data->raycasting->deltaDistY = fabs(1 / data->raycasting->ray_dir_y);
         data->raycasting->hit = 0;
         /* side_dist x */
         if(data->raycasting->ray_dir_x < 0)
@@ -215,124 +354,168 @@ void    render_walls(t_data *data)
 
 
 
+
+
+
+
+
+////////////////	MOVEMENTS	///////////////////
+static void	move_forward(t_data *game)
+{
+	t_raycast	*rays;
+
+	rays = game->raycasting;
+	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x + rays->dir_x * rays->move_speed)] == 0)
+		rays->pos_x += rays->dir_x * rays->move_speed;
+	if (game->imap[(int)(rays->pos_y + rays->dir_y * rays->move_speed)][(int)rays->pos_x] == 0)
+		rays->pos_y += rays->dir_y * rays->move_speed;
+}
+
+static void	move_backward(t_data *game)
+{
+	t_raycast	*rays;
+
+	rays = game->raycasting;
+	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x - rays->dir_x * rays->move_speed)] == 0)
+		rays->pos_x -= rays->dir_x * rays->move_speed;
+	if (game->imap[(int)(rays->pos_y - rays->dir_y * rays->move_speed)][(int)rays->pos_x] == 0)
+		rays->pos_y -= rays->dir_y * rays->move_speed;
+}
+
+static void	move_left(t_data *game)
+{
+	t_raycast	*rays;
+
+	rays = game->raycasting;
+	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x - rays->dir_y * rays->move_speed)] == 0)
+	rays->pos_x -= rays->dir_y * rays->move_speed;
+	if (game->imap[(int)(rays->pos_y + rays->dir_x * rays->move_speed)][(int)rays->pos_x] == 0)
+	rays->pos_y += rays->dir_x * rays->move_speed;
+}
+
+static void	move_right(t_data *game)
+{
+	t_raycast	*rays;
+
+	rays = game->raycasting;
+	if (game->imap[(int)rays->pos_y][(int)(rays->pos_x + rays->dir_y * rays->move_speed)] == 0)
+	rays->pos_x += rays->dir_y * rays->move_speed;
+	if (game->imap[(int)(rays->pos_y - rays->dir_x * rays->move_speed)][(int)rays->pos_x] == 0)
+	rays->pos_y -= rays->dir_x * rays->move_speed;
+}
+
+
+
+
+
+
+////////////////	EXIT GAME	///////////////////
+
+int	exit_game(t_data *game)
+{
+    (void)game;
+	//+add free_game(game);
+	exit (0);
+}
+
+
+
+
+////////////////	UTILS	///////////////////
+unsigned int ft_get_time(void)
+{
+    struct timespec now;
+
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	return ((now.tv_sec * 1000) + (now.tv_nsec / 1000000));    
+}
+
+
+
+
+
+////////////////	KEY HOOKS	///////////////////
+void	key_left(t_data *game)
+{
+	t_raycast	*rays;
+
+	rays = game->raycasting;
+	rays->old_dir_x = rays->dir_x;
+	rays->dir_x = rays->dir_x * cos(rays->rot_speed) - rays->dir_y * sin(rays->rot_speed);
+	rays->dir_y = rays->old_dir_x * sin(rays->rot_speed) + rays->dir_y * cos(rays->rot_speed);
+	rays->old_plane_x = rays->plane_x;
+	rays->plane_x = rays->plane_x * cos(rays->rot_speed) - rays->plane_y * sin(rays->rot_speed);
+	rays->plane_y = rays->old_plane_x * sin(rays->rot_speed) + rays->plane_y * cos(rays->rot_speed);
+}
+
+void	key_right(t_data *game)
+{
+	t_raycast	*rays;
+
+	rays = game->raycasting;
+	rays->old_dir_x = rays->dir_x;
+	rays->dir_x = rays->dir_x * cos(-rays->rot_speed) - rays->dir_y * sin(-rays->rot_speed);
+	rays->dir_y = rays->old_dir_x * sin(-rays->rot_speed) + rays->dir_y * cos(-rays->rot_speed);
+	rays->old_plane_x = rays->plane_x;
+	rays->plane_x = rays->plane_x * cos(-rays->rot_speed) - rays->plane_y * sin(-rays->rot_speed);
+	rays->plane_y = rays->old_plane_x * sin(-rays->rot_speed) + rays->plane_y * cos(-rays->rot_speed);
+}
+
+int	keys(int keycode, t_data *data)
+{
+	t_raycast	*rays;
+
+	rays = data->raycasting;
+	rays->oldtime = rays->time;
+	rays->time = ft_get_time();
+	rays->frametime = (rays->time - rays->oldtime) / 1000.0;
+	rays->move_speed = rays->frametime * 20.0;
+	rays->rot_speed = rays->frametime * 10.0;
+	if (keycode == 13)
+		move_forward(data);
+	if (keycode == 1)
+		move_backward(data);
+	if (keycode == 0)
+		move_left(data);
+	if (keycode == 2)
+		move_right(data);
+	if (keycode == 124)
+		key_right(data);
+	if (keycode == 123)
+		key_left(data);
+	if (keycode == 53)
+		exit_game(data);
+	return (0);
+}
+
+
+
+
+
+////////////////	MAIN LOOP FUNCTION	///////////////////
 int loop_function(t_data *data)
 {
     t_raycast	*raycasting;
     
     mlx_clear_window(data->mlx, data->win);
     raycasting = data->raycasting;
-    //printf("var%d\n", (int)data->raycasting->img);
-    
+    data->raycasting->time = ft_get_time();
+
     raycasting->img = mlx_new_image(data->mlx, data->screen_width, data->screen_heigth);
     raycasting->img_address = mlx_get_data_addr(raycasting->img, &raycasting->bits_per_pixel, &raycasting->line_length, &raycasting->endian);
+    mlx_hook(data->win, 2, 1L << 0, keys, data); 
     draw_floor_n_sky(data);
     render_walls(data);
     mlx_put_image_to_window(data->mlx, data->win, data->raycasting->img, 0, 0);
     mlx_destroy_image(data->mlx, raycasting->img);
-    /*if (data->minimap_on)
-        print_bonus_minimap(data);*/
+
     return (0);
 }
 
 
 
 
-int init_map_data(t_data *data, char *map_adress)
-{
-    
-    int fd;
-    char    **map_in_char;
-    char    *line;
-    int     i;
-	/* reading_map */
-    fd = open(map_adress, O_RDONLY);
-	if(fd == -1)
-		ft_error(WRONG_MAP_PATH);
-	/* ++add map lines counter */
-    int lines = 8;
-    map_in_char = malloc(sizeof(char *) * (lines + 1));
-	if (map_in_char == NULL)
-		ft_error(MEMORY_ERROR);
-
-    line = get_next_line(fd);
-    map_in_char[0] = line;
-   	i = 1;
-    while(line)    
-    {        
-        line = get_next_line(fd);
-        map_in_char[i] = line;
-        i++;
-    }
-	map_in_char[i] = NULL;
-    data->temp_map= map_in_char; 
-	close(fd);
-    return(0);
-}
-
-
-void    fill_map(t_data *data, int i)
-{
-    int j = 0;
-    while ((data->temp_map[i][j] != '\0' && data->temp_map[i][j] != '\n'))
-    {
-        data->imap[i][j] = data->temp_map[i][j] - '0';
-        //printf("%d", data->imap[i][j]);
-        j++;
-    }
-}
-
-/* convert map from char to int*/
-int convert_map(t_data *data)
-{
-   int	i, j;
-
-	i = 0;
-	/////////TEMPORARY FUNCTION ////////
-	/* + add function that will calculate max legth of non-rectangular map */
-	/* + add function that will conver non-rectangular map to a rectangular map */
-	while (data->temp_map[i])
-		i++;
-	////////////////////////////////////
-    data->imap = malloc(sizeof(int *) * i);
-    i = 0;
-    j = 0;
-    while(data->temp_map[i] != NULL)
-    {   
-        data->imap[i] = malloc(sizeof(int) * strlen(data->temp_map[i]));
-        fill_map(data, i);
-
-        i++;
-    }
-    //////test map printing:
-
-    i = 0;
-    j = 0;
-	while(data->temp_map[i] != NULL)
-	{
-        j = 0;
-		while(j < 6)
-        {
-            printf("%d", data->imap[i][j]);
-            j++;
-        }
-        printf("\n");
-		i++;
-	}
-    ///////////////////////
-    return (0);
-}
-
-
-void	init_facing_direction(t_data *data)
-{  
-    /* Here should be the full algorithm */
-    data->raycasting->dir_x = 1;
-    data->raycasting->dir_y = 0;
-    data->raycasting->plane_y = 0;
-	data->raycasting->plane_x = -0.66;
-}
-
-
+////////////////	MAIN	///////////////////
 int main(int ac, char **argv)
 {
     t_data	*data;
@@ -342,11 +525,17 @@ int main(int ac, char **argv)
 	/* + add check args */
 	/* + add check map */
     init_map_data(data, argv[1]);
+    /*init_map*/       
+
+	//temp declaration:
+	data->player_direction = 'N';
+
+    init_facing_direction(data);  
+	printf("segfault is here - 2\n");
     convert_map(data);
-    /*init_map*/   
-    
-    init_facing_direction(data);   
-    /*mlx_hooks*/
+	printf("segfault is here - 3\n");
+	mlx_hook(data->win, 17, 1L << 0, exit_game, data);
+    mlx_key_hook(data->win, keys, data);
     mlx_loop_hook(data->mlx, loop_function, data);
 	mlx_loop(data->mlx);
 
