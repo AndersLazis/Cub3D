@@ -114,3 +114,4 @@ void open_wall_texture(t_data *data, t_image *image, char*	path);
 void	convert_color(int *color, char	*rgb_code);
 char	**ft_split(char const *s, char c);
 int	ft_atoi(const char *str);
+int	*convert(unsigned char *img_data, int tex_width, int tex_heigth);

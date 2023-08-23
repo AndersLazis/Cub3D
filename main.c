@@ -517,7 +517,7 @@ int loop_function(t_data *data)
 ////////////////	INIT TEXTURES	///////////////////
 int	open_textures_and_colors(t_data *data)
 {
-	/* +add check function for availability of texture file by path from map file */
+	/* +add check function for availability of texture file by path from map file */	
 	/* +add check function for wrong color code check */
 	//--------------for test----------------
 	char *NO = "NO";
@@ -584,18 +584,18 @@ int	init_textures(t_data *data)
 	unsigned char	*img_data;
 	int bpp;
 
-	img_data = (unsigned char *)mlx_get_data_addr(data->northern_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
-	data->texture[0] = convert(img_data, data->tex_width, data->tex_height);
-	img_data = (unsigned char *)mlx_get_data_addr(data->southern_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
-	data->texture[1] = convert(img_data, data->tex_width, data->tex_height);
-	img_data = (unsigned char *)mlx_get_data_addr(data->western_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
-	data->texture[2] = convert(img_data, data->tex_width, data->tex_height);
-	img_data = (unsigned char *)mlx_get_data_addr(data->eastern_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
-	data->texture[3] = convert(img_data, data->tex_width, data->tex_height);
+	img_data = (unsigned char *)mlx_get_data_addr(data->northern_wall.xpm_ptr, &bpp, &data->size_line, &data->raycasting->endian);
+	data->texture[0] = (uint32_t *)convert(img_data, data->tex_width, data->tex_height);
+	img_data = (unsigned char *)mlx_get_data_addr(data->southern_wall.xpm_ptr, &bpp, &data->size_line, &data->raycasting->endian);
+	data->texture[1] = (uint32_t *)convert(img_data, data->tex_width, data->tex_height);
+	img_data = (unsigned char *)mlx_get_data_addr(data->western_wall.xpm_ptr, &bpp, &data->size_line, &data->raycasting->endian);
+	data->texture[2] = (uint32_t *)convert(img_data, data->tex_width, data->tex_height);
+	img_data = (unsigned char *)mlx_get_data_addr(data->eastern_wall.xpm_ptr, &bpp, &data->size_line, &data->raycasting->endian);
+	data->texture[3] = (uint32_t *)convert(img_data, data->tex_width, data->tex_height);
 	return(0);
 }
 
-int	convert(unsigned char *img_data, int tex_width, int tex_heigth)
+int	*convert(unsigned char *img_data, int tex_width, int tex_heigth)
 {
 	int	*int_array;
 	int	i;
