@@ -9,7 +9,20 @@
 #include <unistd.h>
 #include "gnl/get_next_line.h"
 
+
+
+
+
 /*  Header file */
+
+
+typedef struct s_image
+{
+    void    *xpm_ptr;
+    int     width;
+    int     heigth;
+}   t_image;
+
 typedef struct s_raycast
 {   
     void	*mlx;
@@ -64,22 +77,26 @@ typedef struct s_raycast
 
 typedef struct s_data
 {
-    void    *mlx;
-    void    *win;
-    int     screen_heigth;
-    int     screen_width;
+    void        *mlx;
+    void        *win;
+    int         screen_heigth;
+    int         screen_width;
 
-    int     sky_color;
-    int     floor_color;
-    char    *win_title;
-    char    player_direction;
-    char    **temp_map;
-    int     **imap;
-    int     tex_width;
-    int     tex_height;
+    int         sky_color;
+    int         floor_color;
+    char        *win_title;
+    char        player_direction;
+    char        **temp_map;
+    int         **imap;
+    int         tex_width;
+    int         tex_height;
     uint32_t    **texture;
-
-
+    t_image		northern_wall;
+	t_image		southern_wall;
+	t_image		western_wall;
+	t_image		eastern_wall;
+    int         size_line;
+	
 
     t_raycast *raycasting;
 
@@ -90,3 +107,10 @@ typedef struct s_data
 #define INVALID_MAP     2
 #define WRONG_MAP_PATH  3
 #define WRONG_QTY_ARGS  4
+
+
+////////////    PROTOTYPES      ////////////
+void open_wall_texture(t_data *data, t_image *image, char*	path);
+void	convert_color(int *color, char	*rgb_code);
+char	**ft_split(char const *s, char c);
+int	ft_atoi(const char *str);

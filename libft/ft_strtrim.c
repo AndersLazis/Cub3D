@@ -3,29 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:33:07 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:33:07 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/20 17:13:07 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 23:30:55 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	maximum(int a, int b)
+static int	f_check(char c, char const *set)
 {
-	if (a >= b)
-		return (a);
-	else
-		return (b);
-}
-
-static bool	foundinstring(char c, char const *set)
-{
-	unsigned int	i;
+	int	i;
 
 	i = 0;
-	while (i < ft_strlen(set))
+	while (set[i])
 	{
 		if (set[i] == c)
 			return (1);
@@ -36,38 +28,30 @@ static bool	foundinstring(char c, char const *set)
 
 char	*ft_strtrim(char const *s1, char const *set)
 {
-	char	*str;
-	int		i;
-	int		min;
-	int		max;
+	size_t	start;
+	size_t	end;
 
-	i = 0;
-	min = 0;
-	max = ft_strlen(s1);
-	if (*s1 == 0)
-		return (ft_calloc(1, 1));
-	while (foundinstring(s1[min], set) == 1)
-		min++;
-	while (foundinstring(s1[max - 1], set) == 1 && max >= min)
-		max--;
-	str = malloc(maximum((max - min + 1), 1));
-	if (!str)
-		return (NULL);
-	while (min + i < max)
-	{
-		str[i] = s1[min + i];
-		i++;
-	}
-	str[i] = 0;
-	return (str);
+	if (!s1)
+		return (ft_strdup(""));
+	if (!set)
+		return (ft_strdup(s1));
+	start = 0;
+	end = ft_strlen(s1);
+	while (f_check(s1[start], set))
+		start++;
+	if (start == end)
+		return (ft_strdup(""));
+	while (f_check(s1[end - 1], set))
+		end--;
+	return (ft_substr(s1, start, end - start));
 }
 
-/*
-int main(void)
-{
-	char s1[] = "";
-	char set[] = "";
-	printf("%s:",ft_strtrim(s1,set));
-	//printf("%d", ft_strlen(ft_strtrim(s1,set)));
-}
-*/
+// int main() 
+// {
+// char str1[] = "abcdefghijkab"; 
+// char set[] = "ab";   
+// char* res;
+// res = ft_strtrim(str1, set);
+// printf("%s", res);
+//   return 0;
+// }

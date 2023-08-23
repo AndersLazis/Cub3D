@@ -3,49 +3,48 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 12:57:19 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 12:57:19 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/18 15:42:27 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 23:47:40 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	*ft_memset(void *str, int c, size_t n)
+void	*ft_memset(void *s, int c, size_t len)
 {
-	char	*ptr;
+	size_t	i;
+	char	*p;
 
-	ptr = (char *)str;
-	while (n--)
-		*ptr++ = c;
-	return (str);
+	i = 0;
+	p = s;
+	while (i < len)
+	{
+		*p = (char)c;
+		i++;
+		p++;
+	}
+	return (s);
 }
 
-/*
-int main(void)
-{
-	char test[250];
-	int  n = 5;
+// void	printArray(char arr[], int n)
+// {
+//     int i =0;
+//     for (i=0; i<n; i++)
+//     {
+//         printf("%c", arr[i]);
+//     }
+// }
 
-	ft_memset(test, 100, n);
-	n = 0;
-	while(n < 5)
-	{
-		printf("%d", test[n]);
-		n = n + 1;
-	}
-	printf("\n");
-	ft_memset(test, 'c', 50);
-	n = 10;
-	while(n <= 50)
-	{
-		printf("%c", test[n]);
-		n = n + 1;
-	}
-}
-*/
-
-/*
-cc -Wall -Wall -Wextra ft_memset.c
-*/
+// int main()
+// {
+//     char arr[4] = "abcd";    
+//     ft_memset(arr,'l', sizeof(arr));
+//     printArray(arr,4);
+//     printf("\n");
+//     char arr1[4] = "abcd";
+//     memset(arr1,'l', sizeof(arr1));
+//     printArray(arr1,4);
+//     return 0;
+// }

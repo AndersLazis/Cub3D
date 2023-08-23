@@ -3,105 +3,118 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:33:46 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:33:46 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/21 16:27:47 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 23:42:49 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	ft_countparts(char const *s, char sep)
+static unsigned int	words_counter(char const *s, char c)
 {
-	int	count;
 	int	i;
+	int	count;
 
 	i = 0;
 	count = 0;
-	while (s[i] != '\0')
+	while (s[i])
 	{
-		while (s[i] == sep)
-			i++;
-		if (s[i] != sep && s[i] != '\0')
+		if (s[i] == c)
+		{
+			while (s[i] && s[i] == c)
+				i++;
+		}
+		else
+		{
 			count++;
-		while (s[i] != sep && s[i] != '\0')
-			i++;
+			while (s[i] && s[i] != c)
+				i++;
+		}
 	}
 	return (count);
 }
 
-static char	*ft_mallocwords(char const *s, char sep)
+static char const	*find_begin(char const *s, char c, unsigned int str_num)
 {
-	int		len;
-	char	*str;
+	int	i;
 
-	len = 0;
-	while (s[len] != sep && s[len] != '\0')
-		len++;
-	str = malloc(sizeof(char) * (len + 1));
-	if (str == NULL)
-		return (NULL);
-	len = 0;
-	while (s[len] != sep && s[len] != '\0')
+	i = 0;
+	while (s[i])
 	{
-		str[len] = s[len];
-		len++;
+		if (s[i] == c)
+		{
+			while (s[i] == c)
+				i++;
+		}
+		else
+		{
+			if (str_num)
+				str_num--;
+			else
+				return (&s[i]);
+			while (s[i] && s[i] != c)
+				i++;
+		}
 	}
-	str[len] = '\0';
-	return (str);
+	return (&s[i]);
 }
 
-static void	ft_free(char **strs, int j)
+static char	*trim_string(char const *s, char c, unsigned int str_num)
 {
-	while (j-- > 0)
-		free(strs[j]);
-	free(strs);
+	char const	*begin;
+	int			len;
+
+	begin = find_begin(s, c, str_num);
+	len = 0;
+	while (begin[len] && begin[len] != c)
+		len++;
+	return (ft_substr(begin, 0, len));
+}
+
+static void	ft_free(char **arr, int to_delete)
+{
+	int	i;
+
+	i = 0;
+	while (i < to_delete)
+		free(arr[i++]);
+	free(arr);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	int		wordcount;
-	char	**strs;
-	int		j;
+	char			**arr;
+	char			*tmp;
+	unsigned int	i;
 
-	j = -1;
-	wordcount = ft_countparts(s, c);
-	strs = ft_calloc((wordcount + 1) * sizeof(char *), 1);
-	if (!strs)
+	if (!s)
 		return (NULL);
-	while (++j < wordcount)
-	{
-		while (*s == c)
-			s++;
-		if (*s == '\0')
-			break ;
-		strs[j] = ft_mallocwords(s, c);
-		if (!strs[j])
-		{
-			ft_free(strs, j);
-			return (NULL);
-		}
-		while (*s != c && *s != '\0')
-			s++;
-	}
-	return (strs);
-}
-
-/*
-int main(void)
-{
-	int i;
-	char test[] = " lem  ium dor   sit at, cur  adg elit. Sed non rius. Sse   ";
-	char sep = ' ';
-
-	char **test123;
-	test123 = ft_split(test, sep);
+	arr = malloc(sizeof(char *) * (words_counter(s, c) + 1));
+	if (!arr)
+		return (NULL);
 	i = 0;
-	while(i < 12)
+	while (i < words_counter(s, c))
 	{
-	printf("%s\n", test123[i]);
-	i++;
+		tmp = trim_string(s, c, i);
+		if (!tmp)
+			ft_free(arr, i);
+		arr[i++] = tmp;
 	}
+	arr[i] = NULL;
+	return (arr);
 }
-*/
+
+// int main () {
+
+// 	int i = 0;
+// 	char * str = "abcdefcghcijk";
+// 	char **ptr = ft_split(str, 'c');
+// 	ptr = ft_split(str, 'c');
+// 	while (ptr[i])
+// 	{
+// 		printf("%s\n", ptr[i]);
+// 		i++;
+// 	}
+// }

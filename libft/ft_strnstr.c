@@ -3,39 +3,43 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:25:43 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:25:43 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/18 11:37:34 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 22:59:09 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strnstr(const char *str, const char *pat, size_t len)
+char	*ft_strnstr(const char *big, const char *little, size_t len)
 {
 	size_t	i;
-	int		length;
+	size_t	j;
 
-	if (*pat == '\0')
-		return ((char *)str);
+	if (!big && len == 0)
+		return (NULL);
+	if (!little && len == 0)
+		return ((char *)big);
+	if (!little[0])
+		return ((char *)big);
 	i = 0;
-	length = ft_strlen(pat);
-	while (str[i] != '\0' && (i + length) <= len)
+	while (big[i] && i < len)
 	{
-		if (ft_strncmp((str + i), pat, length) == 0)
-			return ((char *)str + i);
+		j = 0;
+		while (big[i + j] && little[j]
+			&& i + j < len && big[i + j] == little[j])
+			j++;
+		if (!little[j])
+			return ((char *)(big + i));
 		i++;
 	}
 	return (NULL);
 }
 
-/*
-int main()
-{
-	char str[] = "see F your F return F now F";
-		printf("Test1: search pattern %s\n", ft_strnstr(str, "F", strlen(str)));
-		
-	return 0;
-}
-*/
+// int main ()
+// {
+//     const char *s = "cd";
+//     const char *p ="abcdefgh";
+// 	printf("%s\n",ft_strnstr(p, s, 7));
+// }

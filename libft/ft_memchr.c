@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:11:45 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:11:45 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/19 11:55:03 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 18:47:25 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,28 @@
 
 void	*ft_memchr(const void *s, int c, size_t n)
 {
-	char	*str;
+	char	*s1;
+	size_t	i;
 
-	str = (char *)s;
-	while (n--)
+	i = 0;
+	s1 = (char *)s;
+	while (i < n)
 	{
-		if (*str == (char) c)
-			return (str);
-		str++;
+		if (*s1 == (char)c)
+			return ((void *)s1);
+		s1++;
+		i++;
 	}
 	return (NULL);
 }
 
-/*
-int main(void)void	ft_swap(int *a, int *b);
-void	ft_quicksort(int arr[], int start, int end, int seed);
-int		getSmall(int *arr, int j, int start, int pivot);
-int		getBig(int *arr, int i, int end, int pivot);
-int		ft_lincongrugene(int seed);
-{
-	char *test= "hallo Wt";
-	printf("%s \n", memchr(test, 'H', 15));
-	printf("%s \n", ft_memchr(test, 'H', 15));
-}
-*/
+// int main()
+// {
+// 	char str[] = {'a', 'b', 'c', 'd', 'e'};
+// 	char* ptr = ft_memchr(str, 'c', 4);
+// 	if (ptr == NULL)
+// 		printf("none");
+// 	else 
+// 		printf("%c\n", ptr[0]);
+// return 0;
+// }

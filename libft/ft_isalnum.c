@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isalnum.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 12:46:46 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 12:46:46 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/16 10:38:50 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 23:49:22 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,15 @@
 
 int	ft_isalnum(int c)
 {
-	return (ft_isalpha(c) || ft_isdigit(c));
+	if ((c > 96 && c < 123) || (c > 64 && c < 91))
+		return (1);
+	else if (c > 47 && c < 58)
+		return (1);
+	else
+		return (0);
 }
 
-/*
-int main(void)
-{
-    int c = '5';
-    printf("%d \n", isalnum(c));
-    printf("%d \n", ft_isalnum(c));
-}
-*/
-
-/*
-cc -Wall -Wall -Wextra ft_isalnum.c
-*/
+// int main()
+// {
+// 	 printf("%d",ft_isalnum('^'));
+// }

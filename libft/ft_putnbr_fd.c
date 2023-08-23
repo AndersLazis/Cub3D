@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:36:25 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:36:25 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/22 11:01:50 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 19:41:29 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,22 @@
 
 void	ft_putnbr_fd(int n, int fd)
 {
-	long	nb;
-
-	nb = n;
-	if (nb < 0)
+	if (n == -2147483648)
+	{
+		ft_putstr_fd("-2147483648", fd);
+	}
+	else if (n < 0)
 	{
 		ft_putchar_fd('-', fd);
-		nb *= -1;
+		ft_putnbr_fd(-n, fd);
 	}
-	if (nb > 9)
-		ft_putnbr_fd(nb / 10, fd);
-	ft_putchar_fd(nb % 10 + '0', fd);
+	else if (n > 9)
+	{
+		ft_putnbr_fd(n / 10, fd);
+		ft_putnbr_fd(n % 10, fd);
+	}
+	else
+	{
+		ft_putchar_fd((n + 48), fd);
+	}
 }
-
-/*
-int main(void)
-{
-	int fd = 1;
-	ft_putnbr_fd(-213,1);
-}
-*/

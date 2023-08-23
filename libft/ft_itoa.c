@@ -3,96 +3,71 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:34:35 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:34:35 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/21 18:30:05 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 18:47:13 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t	count_numbers(long number)
+static char	*ft_char(char *s, unsigned int number, long int len)
 {
-	int	counter;
-
-	counter = 0;
 	while (number > 0)
 	{
-		number /= 10;
-		counter++;
+		s[len--] = 48 + (number % 10);
+		number = number / 10;
 	}
-	return (counter);
+	return (s);
 }
 
-static char	*ft_helper_swap(int i, int j, char *str)
+static long int	ft_len(int n)
 {
-	int	temp;
+	int	len;
 
-	while (i >= j + 1)
+	len = 0;
+	if (n <= 0)
+		len = 1;
+	while (n != 0)
 	{
-		temp = str[i - 1];
-		str[i - 1] = str[j];
-		str[j] = temp;
-		i--;
-		j++;
+		len++;
+		n = n / 10;
 	}
-	return (str);
+	return (len);
 }
 
-static char	*ft_numtostring(long nb, char *str)
+char	*ft_itoa(int n)
 {
-	int		i;
-	int		j;
+	char				*s;
+	long int			len;
+	unsigned int		number;
+	int					sign;
 
-	i = 0;
-	j = 0;
-	if (nb < 0)
-	{
-		str[i] = '-';
-		i = 1;
-		j = 1;
-		nb *= -1;
-	}
-	while (nb > 0)
-	{
-		str[i++] = (nb % 10 + '0');
-		nb /= 10;
-	}
-	ft_helper_swap(i, j, str);
-	return (str);
-}
-
-char	*ft_itoa(int nb)
-{
-	char	*str;
-	int		counter;
-	long	number;
-
-	counter = 0;
-	number = nb;
-	if (number <= 0)
-	{
-		counter++;
-		number *= -1;
-	}
-	counter += count_numbers(number);
-	str = malloc(counter + 1);
-	if (!str)
+	sign = 1;
+	len = ft_len(n);
+	s = (char *)malloc(sizeof(char) * (len + 1));
+	if (!(s))
 		return (NULL);
-	str[counter] = 0;
-	if (nb == 0)
+	s[len--] = '\0';
+	if (n == 0)
+		s[0] = '0';
+	if (n < 0)
 	{
-		str[0] = '0';
-		return (str);
+		sign *= -1;
+		number = n * -1;
+		s[0] = '-';
 	}
-	return (ft_numtostring(nb, str));
+	else
+		number = n;
+	s = ft_char(s, number, len);
+	return (s);
 }
 
-/*
-int main(void)
-{
-	int nb = -880;
-	printf("%s", ft_itoa(nb));
-}
-*/
+// int main() {
+// int numb = 1911;
+// char* res;
+// res = ft_itoa(numb);
+// printf ("%s", res);
+//   return 0;
+// } 

@@ -3,38 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:06:01 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:06:01 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/16 11:56:07 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 20:40:52 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
-	unsigned int	i;
+	size_t	i;
+	size_t	a;
 
 	i = 0;
-	if (size == 0)
-		return (ft_strlen(src));
-	while (src[i] != '\0' && size != 1)
+	a = ft_strlen(src);
+	if (!dstsize)
+		return (a);
+	while (src[i] && i < dstsize - 1)
 	{
 		dst[i] = src[i];
-		size--;
 		i++;
 	}
 	dst[i] = '\0';
-	return (ft_strlen(src));
+	return (a);
 }
 
-/*
-int main(void)
-{
-	char test[]="HalloTest";
-	char test1[50];
-	ft_strlcpy(test1,test, 4);
-	printf("%s", test1);
-}
-*/
+// int main()
+// {
+//     char p[]= "abcdefgh";
+//     char s[]= "123";
+//     printf("%ld",ft_strlcpy(p,s,4));
+// 	printf("\n");
+// 	printf("%s",p);
+// }

@@ -1,40 +1,40 @@
-NAME	= libft.a
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2022/12/24 10:41:07 by aputiev           #+#    #+#              #
+#    Updated: 2022/12/25 23:44:25 by aputiev          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-SRC = ft_atoi.c ft_isdigit.c ft_isalpha.c ft_isalnum.c ft_isascii.c \
-	ft_isprint.c ft_strlen.c ft_tolower.c ft_toupper.c \
-	ft_strchr.c ft_strrchr.c ft_bzero.c ft_strncmp.c ft_strdup.c ft_strnstr.c \
-	ft_memcpy.c ft_memcmp.c ft_strlcat.c ft_calloc.c ft_memset.c ft_strlcpy.c \
-	ft_substr.c ft_strjoin.c  ft_itoa.c ft_putnbr_fd.c ft_putendl_fd.c \
-	ft_putstr_fd.c ft_putchar_fd.c ft_split.c ft_memmove.c ft_memchr.c \
-	ft_strtrim.c ft_strmapi.c ft_striteri.c
+NAME = libft.a
 
-BONUS = ft_lstadd_back.c ft_lstadd_front.c ft_lstiter.c \
-	ft_lstlast.c ft_lstnew.c ft_lstsize.c \
-	ft_lstclear.c ft_lstdelone.c ft_lstmap.c
+CC = gcc
 
-OBJS = $(SRC:.c=.o) 
+CFLAGS = -Wall -Wextra -Werror
 
-BONUS_OBJS = $(BONUS:.c=.o)
 
-CC = cc
-CFLAGS = -Wall -Werror -Wextra
-RM = rm -rf
-AR = ar crs
-
-$(NAME): $(OBJS)
-	$(AR) $(NAME) $(OBJS)
+ SRC = ft_bzero.c ft_isalnum.c ft_isascii.c ft_isprint.c ft_memcmp.c \
+ 	ft_memmove.c ft_strchr.c ft_strlcpy.c ft_strncmp.c ft_tolower.c \
+ 	ft_atoi.c   ft_calloc.c ft_isalpha.c ft_isdigit.c ft_memchr.c ft_memcpy.c \
+ 	ft_memset.c ft_strlcat.c ft_strlen.c ft_strrchr.c ft_toupper.c ft_substr.c \
+	ft_strjoin.c ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c \
+	ft_itoa.c ft_strdup.c ft_strtrim.c ft_split.c ft_strmapi.c ft_striteri.c   \
+	ft_strnstr.c 
+OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-bonus: $(OBJS) $(BONUS_OBJS)
-	$(AR) $(NAME) $(BONUS_OBJS)
+$(NAME): $(OBJ)
+	ar -rc $(NAME) $(OBJ)
 
 clean:
-	$(RM) $(OBJS) $(BONUS_OBJS)
+	rm -f $(OBJ)
 
-fclean:	clean
-	$(RM) $(NAME)
+fclean: clean
+	rm -f $(NAME)
 
-re:	fclean all
-
-.PHONY:	all clean fclean re bonus
+re: fclean all

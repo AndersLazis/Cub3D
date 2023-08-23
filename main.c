@@ -412,6 +412,20 @@ unsigned int ft_get_time(void)
 	return ((now.tv_sec * 1000) + (now.tv_nsec / 1000000));    
 }
 
+int	ft_strncmp(char *s1, char *s2, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while ((s1[i] != '\0' || s2[i] != '\0') && i < n)
+	{
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
+	}
+	return (0);
+}
+
 
 
 
@@ -501,12 +515,107 @@ int loop_function(t_data *data)
 
 
 ////////////////	INIT TEXTURES	///////////////////
+int	open_textures_and_colors(t_data *data)
+{
+	/* +add check function for availability of texture file by path from map file */
+	/* +add check function for wrong color code check */
+	//--------------for test----------------
+	char *NO = "NO";
+	char *NO_path = "resources/Wall_01.xpm";
+	char *SO = "SO";
+	char *SO_path = "resources/Wall_02.xpm";
+	char *WE = "WE";
+	char *WE_path = "resources/Wall_03.xpm";
+	char *EA = "EA";
+	char *EA_path = "resources/Wall_04.xpm";
+	char *F = "F";
+	char *F_color = "220,100,0";
+	char *C = "C";
+	char *C_color = "225,30,0";
+	//--------------------------------------
+
+	if (ft_strncmp(NO, "NO", 3) == 0)
+		open_wall_texture(data, &data->northern_wall, NO_path);
+	if (ft_strncmp(SO, "SO", 3) == 0)
+		open_wall_texture(data, &data->southern_wall, SO_path);
+	if (ft_strncmp(WE, "WE", 3) == 0)
+		open_wall_texture(data, &data->western_wall, WE_path);
+	if (ft_strncmp(EA, "EA", 3) == 0)
+		open_wall_texture(data, &data->eastern_wall, EA_path);
+	if (ft_strncmp(EA, "EA", 3) == 0)
+		open_wall_texture(data, &data->eastern_wall, EA_path);
+	if (ft_strncmp(F, "F", 2) == 0)
+		convert_color(&data->floor_color, F_color);
+	if (ft_strncmp(C, "C", 2) == 0)
+		convert_color(&data->sky_color, C_color);	
+	return (0);
+}
+
+void open_wall_texture(t_data *data, t_image *image, char*	path)
+{
+	t_image	texture;
+
+	texture.xpm_ptr = mlx_xpm_file_to_image(data->mlx, path, &texture.width, &texture.heigth);
+	if (texture.xpm_ptr == NULL)
+		ft_error(MEMORY_ERROR);
+	*image = texture;
+}
+
+void	convert_color(int *color, char	*rgb_code)
+{
+	char	**colors;
+	int	i;
+	int	r;
+	int	g;
+	int	b;
+
+	i = 0;
+	colors = ft_split(rgb_code, ',');
+	/* free colors */
+	r = ft_atoi(colors[0]);
+	g = ft_atoi(colors[1]);
+	b = ft_atoi(colors[2]);	
+	*color = (0 << 24 | r << 16 | g << 8 | b);
+	//printf("color:|%x|\n", *color);
+}
+
 int	init_textures(t_data *data)
 {
+	unsigned char	*img_data;
+	int bpp;
 
+	img_data = (unsigned char *)mlx_get_data_addr(data->northern_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
+	data->texture[0] = convert(img_data, data->tex_width, data->tex_height);
+	img_data = (unsigned char *)mlx_get_data_addr(data->southern_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
+	data->texture[1] = convert(img_data, data->tex_width, data->tex_height);
+	img_data = (unsigned char *)mlx_get_data_addr(data->western_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
+	data->texture[2] = convert(img_data, data->tex_width, data->tex_height);
+	img_data = (unsigned char *)mlx_get_data_addr(data->eastern_wall.xpm_ptr, &bpp, &data->size_line, data->raycasting->endian);
+	data->texture[3] = convert(img_data, data->tex_width, data->tex_height);
+	return(0);
+}
 
+int	convert(unsigned char *img_data, int tex_width, int tex_heigth)
+{
+	int	*int_array;
+	int	i;
+	int	j;
+	int	k;
 
-	
+	i = -1;
+	int_array = (int *)malloc(tex_width * tex_heigth * (sizeof(int)));
+	if (int_array == NULL)
+		ft_error(MEMORY_ERROR);
+	while(++i < tex_heigth)
+	{
+		j = -1;
+		while (++j < tex_width)
+		{
+			k = (i * tex_width + j) * 4;
+			int_array[i * tex_width + j] = (img_data[k + 3] << 24) | (img_data[k + 2] << 16) | (img_data[k + 1] << 8) | img_data[k];
+		}
+	}
+	return(int_array);
 }
 
 
@@ -537,6 +646,7 @@ int main(int ac, char **argv)
 	//printf("segfault is here - 2\n");
     convert_map(data);
 	//printf("segfault is here - 3\n");
+	open_textures_and_colors(data);
 	init_textures(data);
 
 	mlx_hook(data->win, 17, 1L << 0, exit_game, data);

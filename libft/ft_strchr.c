@@ -3,33 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:10:05 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:10:05 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/17 13:53:23 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 19:53:24 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strchr(const char *str, int c)
+char	*ft_strchr(const char *s, int c)
 {
-	while (*str != '\0')
+	if (s[0] == '\0' && c == '\0')
+		return ((char *)s);
+	if (!*s)
+		return (0);
+	while (*s)
 	{
-		if (*str == (char) c)
-			return ((char *)str);
-		str++;
+		if (*s == (char)c)
+			return ((char *)s);
+		s++;
 	}
-	if (*str == (char) c)
-		return ((char *)str);
+	if (*s == (char)c)
+	{
+		return ((char *)s);
+	}
 	return (NULL);
 }
 
-/*
-int main(void)
-{
-	const char *test= "efjldj";
-	printf("%s \n", ft_strchr(test, '\0'));
-	printf("%s \n", strchr(test, '\0'));
-}
-*/
+// int main()
+// {
+// 	printf("%s",ft_strchr("abcdefgh", 'c'));
+// 	printf("\n");
+// 	printf("%s\n",strchr("abcdefgh", 'c'));
+// }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 12:56:47 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 12:56:47 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/16 11:41:45 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 20:37:43 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,18 @@
 
 size_t	ft_strlen(const char *s)
 {
-	size_t	count;
+	size_t	i;
 
-	count = 0;
-	if (!s)
-		return (0);
-	while (*s++)
-		count++;
-	return (count);
+	i = 0;
+	while (s[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
 }
 
-/*
-int main(void)
-{
-	char test[] = "Hallo Welt";
-	printf("%zu \n", ft_strlen(test));
-}
-*/
-
-/*
-cc -Wall -Wall -Wextra ft_strlen.c 
-*/
+// int main()
+// {
+//     char *p="abcdef";
+//     printf("%ld",ft_strlen(p));
+// }

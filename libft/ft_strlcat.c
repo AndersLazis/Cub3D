@@ -3,53 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:07:57 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:07:57 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/16 17:28:02 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/26 00:17:03 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	ft_strlcat(char *dst, const char *src, size_t size)
+size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 {
-	char	*d;
-	size_t	catcounter;
-	size_t	dstlen;
+	size_t	i;
+	size_t	ret;
 
-	d = dst;
-	catcounter = size;
-	while (catcounter-- != 0 && *d != '\0')
-		d++;
-	dstlen = d - dst;
-	catcounter = size - dstlen;
-	if (catcounter == 0)
-		return (dstlen + ft_strlen(src));
-	while (*src != '\0')
+	i = 0;
+	if (dst == NULL)
 	{
-		if (catcounter != 1)
-		{
-			*d++ = *src;
-			catcounter--;
-		}
-		dstlen++;
-		src++;
+		ret = ft_strlcpy(dst, src, dstsize - i);
+		return (ft_strlen (src));
 	}
-	*d = '\0';
-	return (dstlen);
+	while (*dst && i < dstsize)
+	{
+		++dst;
+		++i;
+	}
+	ret = ft_strlcpy(dst, src, dstsize - i);
+	return (ret + i);
 }
 
-/*
-int main(void)
-{
-	char dest[25];
+// int main()
+// {
+//     char src[] = "123456789";
+//     char dest[20]="";  
+//     size_t sz;
+//     printf("%ld\n",ft_strlcat(dest,src,sizeof(dest)));
+//     printf("%s\n",dest);
 
-	dest[0] = 'A';
-	dest[1] = 'B';
-	dest[2] = 0; 
-	ft_strlcat(dest, "lorem ipsum dolor sit amet", 4);
-	printf("%s", dest);
+//     sz = ft_strlcat(dest,src,sizeof(dest));
 
-}
-*/
+//     if (sz>=sizeof(dest))
+//           printf("Truncation has been detected!\n");
+//     return(0);
+// }

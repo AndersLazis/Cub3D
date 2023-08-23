@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:32:10 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:32:10 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/20 15:47:10 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 22:24:26 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,33 +14,35 @@
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	char			*str;
-	unsigned int	i;
+	size_t	i;
+	size_t	j;
+	char	*str;
 
-	str = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	i = 0;
+	j = 0;
+	if (!s1 || !s2)
+		return (NULL);
+	str = malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
 	if (!str)
 		return (NULL);
-	i = 0;
 	while (s1[i] != '\0')
 	{
 		str[i] = s1[i];
 		i++;
 	}
-	i = 0;
-	while (s2[i] != '\0')
+	while (s2[j] != '\0')
 	{
-		str[ft_strlen(s1) + i] = s2[i];
+		str[i] = s2[j];
+		j++;
 		i++;
 	}
-	str[ft_strlen(s1) + i] = '\0';
+	str[i] = '\0';
 	return (str);
 }
 
-/*
-int main(void)
-{
-	char test[] = "test";
-	char test1[] = "";
-	printf("%s", ft_strjoin(test, test1));
-}
-*/
+// int main()
+// {
+// 	char *p ="abc";
+// 	char *s = "def";
+// 	printf("%s",ft_strjoin(p,s));
+// }

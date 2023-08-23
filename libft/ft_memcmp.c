@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:12:21 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:12:21 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/19 12:40:23 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 18:14:49 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,35 @@
 
 int	ft_memcmp(const void *s1, const void *s2, size_t n)
 {
-	unsigned char	*ptr;
-	unsigned char	*ptr1;
+	char	*s1_1;
+	char	*s2_2;
+	size_t	i;
 
-	ptr = (unsigned char *)s1;
-	ptr1 = (unsigned char *)s2;
-	while (n && (*ptr == *ptr1))
+	s1_1 = (char *)s1;
+	s2_2 = (char *)s2;
+	i = 0;
+	while (i < n)
 	{
-		ptr++;
-		ptr1++;
-		n--;
+		if (*s1_1 != *s2_2)
+			return ((unsigned char)*s1_1 - (unsigned char)*s2_2);
+	s1_1++;
+	s2_2++;
+	i++;
 	}
-	if (n == 0)
-		return (0);
-	else
-		return (*ptr - *ptr1);
+	return (0);
 }
 
-/*
-int main(void)
-{
-	char *test = "Hal";
-	char *test1 = "Hal1";
-	printf("%d \n", ft_memcmp(test,test1,40));
-
-	printf("%d \n", memcmp(test,test1,40));
-}
-*/
+// #include <stdio.h>
+// int main()
+// {
+// 	char str1[] = "abcdefgh";
+// 	char str2[] = "abcdeggh";
+// 	int res = ft_memcmp(str1, str2, 7);
+// 	if (res == 0)
+// 		printf("none");
+// 	else 
+// 	{
+// 		printf("%d\n", res);
+// 	}
+// return 0;
+// }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:10:33 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:10:33 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/17 19:28:26 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 22:42:01 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,21 @@
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	while (n && (*s1 != 0 || *s2 != 0) && (*s1 == *s2))
+	size_t	i;
+
+	i = 0;
+	while ((s1[i] != '\0' || s2[i] != '\0') && i < n)
 	{
-		s1++;
-		s2++;
-		n--;
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
 	}
-	if (n == 0)
-		return (0);
-	else
-		return (*(unsigned char *)s1 - *(unsigned char *)s2);
+	return (0);
 }
 
-/*
-int main(void)
-{
-	const char test[] = "test\200";
-	const char test1[] = "test\0";
-	size_t n = 6;
-	printf("%d \n", ft_strncmp(test, test1, n));
-	printf("%d \n", strncmp(test, test1, n));
-}
-*/
+// int main()
+// {
+//     char *s="abccefg";
+//     char *p = "abcdefg";   
+//     printf("%d",ft_strncmp(s,p,5));
+// }

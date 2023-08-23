@@ -3,45 +3,57 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:30:38 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:30:38 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/20 15:14:05 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 23:12:59 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+static char	*newstr(size_t len, int start, char const *s)
 {
-	size_t	i;
 	char	*str;
 
-	i = 0;
-	if (start >= ft_strlen(s))
-	{
-		str = ft_calloc(1, 1);
-		if (!str)
-			return (NULL);
-		return (str);
-	}
-	if (ft_strlen(s) < start + len)
-		len = ft_strlen(s) - start;
-	str = ft_calloc(len + 1, 1);
-	if (!str)
-		return (NULL);
-	while (i < len)
-	{
-		str[i] = s[start + i];
-		i++;
-	}
+	if ((size_t)start > ft_strlen (s))
+		str = malloc(1);
+	else if (len + (size_t)start > ft_strlen (s))
+		str = malloc((ft_strlen (s) - start) + 1);
+	else
+		str = malloc(len + 1);
 	return (str);
 }
 
-/*
-int main(void)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	char test[] = "lorem ipusm";
-	printf("%s", ft_substr(test, 0, 10));
+	size_t	i;
+	size_t	j;
+	char	*str;
+
+	if (!s)
+		return (NULL);
+	if (ft_strlen (s) < len)
+		len = ft_strlen(s);
+	str = newstr(len, start, s);
+	if (!str)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (s[i])
+	{
+		if (i >= start && j < len)
+		{
+			str[j] = s[i];
+			j++;
+		}
+		i++;
+	}
+	str[j] = '\0';
+	return (str);
 }
-*/
+
+// int main ()
+// {
+// 	printf("%s",ft_substr("abcdefghijk" ,3,4));
+// }

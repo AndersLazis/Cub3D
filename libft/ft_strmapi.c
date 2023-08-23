@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strmapi.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mschulme <mschulme@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aputiev <aputiev@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 13:34:59 by mschulme          #+#    #+#             */
-/*   Updated: 2023/05/09 13:34:59 by mschulme         ###   ########.fr       */
+/*   Created: 2022/12/22 07:37:28 by aputiev           #+#    #+#             */
+/*   Updated: 2022/12/25 22:37:07 by aputiev          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,36 @@
 
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 {
-	int		i;
-	char	*strmod;
+	char			*t;
+	unsigned int	i;
 
-	strmod = malloc(ft_strlen(s) + 1);
-	if (!strmod)
-		return (NULL);
 	i = 0;
-	while (s[i] != 0)
+	if (!s)
+		return (NULL);
+	else if (!f)
+		return (ft_strdup(s));
+	t = ft_strdup(s);
+	if (!t)
+		return (NULL);
+	while (s[i] != '\0')
 	{
-		strmod[i] = (*f)(i, s[i]);
+		t[i] = (*f)(i, s[i]);
 		i++;
 	}
-	strmod[i] = 0;
-	return (strmod);
+	return (t);
 }
+
+// char f (unsigned int i, char c)
+// {
+// 	char res;
+// 	i = i;
+// 	res = c + 2;
+// 	return (res);
+// }
+
+// #include <stdio.h>
+// int main ()
+// {
+// 	char const *p = "abcd";
+// 	printf("%s",ft_strmapi(p ,f));	
+// }
