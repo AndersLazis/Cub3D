@@ -16,6 +16,7 @@ int ft_error(int error_code)
     exit(1);
 }
 
+////////////////	MINIMAP		///////////////////
 
 
 
@@ -250,7 +251,7 @@ void	draw_walls(t_data *data, int i)
 	{
 		data->raycasting->texy = (int)data->raycasting->texpos & (data->tex_height - 1);
 		data->raycasting->texpos += data->raycasting->step;
-		data->raycasting->colr = 0x0000ff40;
+		data->raycasting->colr = data->texture[data->raycasting->texnum + data->raycasting->side -1][data->tex_height * data->raycasting->texy + data->raycasting->texx];
 		if (data->raycasting->side % 2 == 1)
 			data->raycasting->colr = data->raycasting->colr / 2;
         //printf("i=%d, j=%d, data->raycasting->colr = %d\n", i, j, data->raycasting->colr);
@@ -502,6 +503,7 @@ int loop_function(t_data *data)
     mlx_hook(data->win, 2, 1L << 0, keys, data); 
     draw_floor_n_sky(data);
     render_walls(data);
+	draw_minimap(data);
     mlx_put_image_to_window(data->mlx, data->win, data->raycasting->img, 0, 0);
     mlx_destroy_image(data->mlx, raycasting->img);
 
@@ -521,13 +523,13 @@ int	open_textures_and_colors(t_data *data)
 	/* +add check function for wrong color code check */
 	//--------------for test----------------
 	char *NO = "NO";
-	char *NO_path = "resources/Wall_01.xpm";
+	char *NO_path = "resources/01.xpm";
 	char *SO = "SO";
-	char *SO_path = "resources/Wall_02.xpm";
+	char *SO_path = "resources/02.xpm";
 	char *WE = "WE";
-	char *WE_path = "resources/Wall_03.xpm";
+	char *WE_path = "resources/03.xpm";
 	char *EA = "EA";
-	char *EA_path = "resources/Wall_04.xpm";
+	char *EA_path = "resources/04.xpm";
 	char *F = "F";
 	char *F_color = "220,100,0";
 	char *C = "C";
@@ -612,7 +614,7 @@ int	*convert(unsigned char *img_data, int tex_width, int tex_heigth)
 		while (++j < tex_width)
 		{
 			k = (i * tex_width + j) * 4;
-			int_array[i * tex_width + j] = (img_data[k + 3] << 24) | (img_data[k + 2] << 16) | (img_data[k + 1] << 8) | img_data[k];
+			int_array[i * tex_width + j] = ((img_data[k + 3] << 24) | (img_data[k + 2] << 16) | (img_data[k + 1] << 8) | img_data[k]);
 		}
 	}
 	return(int_array);
@@ -620,10 +622,105 @@ int	*convert(unsigned char *img_data, int tex_width, int tex_heigth)
 
 
 
+////////////////	MINIMAP	///////////////////
 
+int	create_trgb(int t, int r, int g, int b)
+{
+	return (t << 24 | r << 16 | g << 8 | b);
+}
 
+void draw_back_layer(t_data *data)
+{
+	int	i;
+	int	j;
 
+	i = 0;
+	while (i < 200)
+	{
+		j = 0;
+		while (j < 200)
+		{
+			if(i < 20 || j < 20 || i > 179 || j > 179)
+				my_mlx_pixel_put(data, i, j, create_trgb(255, 255, 255, 255));
+			else
+				my_mlx_pixel_put(data, i, j, create_trgb(0, 255, 255, 255));
+			j++;
+		}
+		i++;
+	}
+}
 
+int	draw_square(t_data *data, int x, int y, uint32_t color)
+{
+	int i;
+	int j;
+
+	i = 0;
+	while (i < 20)
+	{
+		j = 0;
+		while (j < 20)
+		{
+			my_mlx_pixel_put(data, x + i, y + j, color);
+			j++;
+		}
+		i++;
+	}
+	return (0);
+}
+
+size_t	ft_strstrlen(char **str)
+{
+	size_t	i;
+
+	i = 0;
+	while (*(str + i))
+		i++;
+	return (i);
+}
+
+void draw_minimap(t_data *data)
+{
+	int	i = 0;
+	int j;
+
+	draw_back_layer(data);
+	draw_square(data, 100, 100, create_trgb(0, 0, 255, 0));
+	
+	while (i < (int)ft_strstrlen(data->temp_map))
+	{
+		j = 0;
+		while (j < (int)ft_strlen(data->temp_map[i]) - 1)
+		{
+			if(data->raycasting->pos_x - j < 5 && (int)data->raycasting->pos_x - j > -4 && (int)data->raycasting->pos_y - i< 5 && (int)data->raycasting->pos_y - i > -4)
+			{
+				if(data->imap[i][j] == 1)
+				{
+					draw_square(data, 100 - ((int)data->raycasting->pos_y - i) * 20, 100 - ((int)data->raycasting->pos_x - j) * 20, (create_trgb(0,255,0,0)));
+				}
+			}
+			j++;
+		}
+		i++;
+	}
+	// while (i < (int)ft_strstrlen(data->temp_map))
+	// {
+	// 	j = 0;
+	// 	while (j < (int)ft_strlen(data->temp_map[i]) - 1)
+	// 	{
+	// 		if(data->raycasting->pos_x + i < 5 && (int)data->raycasting->pos_x - i > -4 && (int)data->raycasting->pos_y < 5 && (int)data->raycasting->pos_y > -4)
+	// 		{
+	// 			if(data->imap[i][j] == 1)
+	// 			{
+	// 				draw_square(data, 100 - ((int)data->raycasting->pos_y - i) * 20, 100 - ((int)data->raycasting->pos_x - j) * 20, (create_trgb(0,255,0,0)));
+	// 			}
+	// 		}
+	// 		j++;
+	// 	}
+	// 	i++;
+	// }
+
+}
 
 
 

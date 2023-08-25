@@ -115,3 +115,4 @@ void	convert_color(int *color, char	*rgb_code);
 char	**ft_split(char const *s, char c);
 int	ft_atoi(const char *str);
 int	*convert(unsigned char *img_data, int tex_width, int tex_heigth);
+void	draw_minimap(t_data *data);
