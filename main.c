@@ -16,7 +16,7 @@ int ft_error(int error_code)
     exit(1);
 }
 
-////////////////	MINIMAP		///////////////////
+
 
 
 
@@ -578,7 +578,7 @@ void	convert_color(int *color, char	*rgb_code)
 	g = ft_atoi(colors[1]);
 	b = ft_atoi(colors[2]);	
 	*color = (0 << 24 | r << 16 | g << 8 | b);
-	//printf("color:|%x|\n", *color);
+	printf("color:|%x|\n", *color);
 }
 
 int	init_textures(t_data *data)
@@ -685,7 +685,7 @@ void draw_minimap(t_data *data)
 	int j;
 
 	draw_back_layer(data);
-	draw_square(data, 100, 100, create_trgb(0, 0, 255, 0));
+	draw_square(data, 90, 90, create_trgb(0, 0, 255, 0));
 	
 	while (i < (int)ft_strstrlen(data->temp_map))
 	{
@@ -703,22 +703,6 @@ void draw_minimap(t_data *data)
 		}
 		i++;
 	}
-	// while (i < (int)ft_strstrlen(data->temp_map))
-	// {
-	// 	j = 0;
-	// 	while (j < (int)ft_strlen(data->temp_map[i]) - 1)
-	// 	{
-	// 		if(data->raycasting->pos_x + i < 5 && (int)data->raycasting->pos_x - i > -4 && (int)data->raycasting->pos_y < 5 && (int)data->raycasting->pos_y > -4)
-	// 		{
-	// 			if(data->imap[i][j] == 1)
-	// 			{
-	// 				draw_square(data, 100 - ((int)data->raycasting->pos_y - i) * 20, 100 - ((int)data->raycasting->pos_x - j) * 20, (create_trgb(0,255,0,0)));
-	// 			}
-	// 		}
-	// 		j++;
-	// 	}
-	// 	i++;
-	// }
 
 }
 
