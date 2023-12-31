@@ -9,8 +9,8 @@ Cub3D is a 42 school team project to create a dynamic view inside a 3D maze. Usi
 
 Validated 31 Aug 2023. Grade: 125%.
 <p align="center">
-  <img src="https://github.com/AndersLazis/Cub3D/blob/master/resources/screen1.png" alt="Cub3D 42 project screenshot 1"/>
-  <img src="https://github.com/AndersLazis/Cub3D/blob/master/resources/screen2.png" alt="Cub3D 42 project screenshot 2"/>
+  <img src="https://github.com/AndersLazis/Cub3D/blob/master/resources/screen1.png" alt="Cub3D 42 project screenshot 1" width="50%"/>
+  <img src="https://github.com/AndersLazis/Cub3D/blob/master/resources/screen2.png" alt="Cub3D 42 project screenshot 2" width="50%"/>
 </p>
 
 ## Usage
